@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+   <script src="js/jquery.js"></script>
+</head>
+<body>
+<div>
+    <div id="main" style="height:800px"></div>
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <script type="text/javascript">
+        $.ajax({
+            url:"https://api.douban.com/v2/book/search?q=都市",
+            dataType:"jsonp",
+           type:"get",
+            success:function(book){
+                console.log(book)
+               suc(book);
+            },
+            error:function(){
+                console.log("连接数据库失败")
+            }
+        })
+        function suc(book){
+            // 路径配置
+            require.config({
+                paths: {
+                    echarts: 'http://echarts.baidu.com/build/dist'
+                }
+            });
+
+            // 使用
+            require(
+                    [
+                        'echarts',
+                        'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
+                    ],
+                    function (ec) {
+                        // 基于准备好的dom，初始化echarts图表
+                        var myChart = ec.init(document.getElementById('main'));
+
+                        var option = {
+                            tooltip: {
+                                show: true
+                            },
+                            legend: {
+                                data:['页数']
+                            },
+                            xAxis : [
+                                {
+                                    type : 'category',
+                                    data : [book.books[0].title,book.books[1].title,book.books[2].title,book.books[3].title,book.books[4].title,book.books[5].title]
+                                }
+                            ],
+                            yAxis : [
+                                {
+                                    type : 'value'
+                                }
+                            ],
+                            series : [
+                                {
+                                    "name":"页数",
+                                    "type":"bar",
+                                    "data":[book.books[0].pages, book.books[1].pages, book.books[2].pages, book.books[3].pages, book.books[4].pages, book.books[5].pages]
+                                }
+                            ]
+                        };
+
+                        // 为echarts对象加载数据
+                        myChart.setOption(option);
+                    }
+            );
+        }
+
+    </script>
+</div>
+</body>
+</html>
